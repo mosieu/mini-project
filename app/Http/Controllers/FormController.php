@@ -14,6 +14,7 @@ class FormController extends Controller
 
     function submit(Request $request)
     {
+
         $rules = [
             'product_url' => 'required|starts_with:https://www.digikala.com/product/dkp-',
         ];
