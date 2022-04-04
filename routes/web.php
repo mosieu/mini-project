@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\ProductController;
-use \App\Http\Controllers\FormController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,10 +13,6 @@ use \App\Http\Controllers\FormController;
 |
 */
 
-Route::get('/', [FormController::class,'index']);
+Route::get('/', [ProductController::class,'index']);
 
-Route::post('/submit',[FormController::class,'submit'])->name('submitForm');
-
-Route::post('/insert/{json}',[ProductController::class,'insert'])->name('insertProduct');
-
-Route::get('/product/{id}',[ProductController::class,'index'])->name('product');
+Route::post('/product',[ProductController::class,'submit'])->name('submitForm');

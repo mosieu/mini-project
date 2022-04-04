@@ -2,20 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
+use App\Jobs\getProductJson;
 use App\Models\Product;
-use Illuminate\Http\Request;
+
 
 class ProductController extends Controller
 {
-    function index($productId)
+    function index()
     {
-        $product = Product::find($productId);
-        return view('product', compact('product'));
+        return view('form');
     }
 
-    function insert($json)
+    function submit(ProductRequest $request)
     {
-        dd($json);
+
+        $job=new getProductJson($request->product_url);
+
+        $json=$job->handle();
+
+        $product=$this->insertProduct($json);
+
+        return view('product',compact('product'));
+    }
+
+
+    private function insertProduct($productJson){
+
         $product = Product::find($productJson->id);
         if ($product == null) {
             $product = new Product();
@@ -25,9 +38,7 @@ class ProductController extends Controller
             $product->category = $productJson->data_layer->category;
             $product->save();
         }
-
-        return redirect()->route('product',['$productId'=>$product->id]);
-
+        return $product;
     }
 
 
