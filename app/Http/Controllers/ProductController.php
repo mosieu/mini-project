@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
-use App\Jobs\getProductJson;
-use App\Models\Product;
+use Illuminate\Http\Request;
 
 
 class ProductController extends Controller
@@ -14,32 +13,35 @@ class ProductController extends Controller
         return view('form');
     }
 
-    function submit(ProductRequest $request)
+    function submit(Request $request)
     {
+        $array = explode('/', $request->category_url);
+        $categorySlug = $array[4];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_POST, FALSE);
+        $page=1;
+        do{
+            curl_setopt($ch, CURLOPT_URL, 'https://api.digikala.com/v1/categories/'.$categorySlug.'/search/?page='.$page);
+            $catResult = curl_exec($ch);
+            $catJson= json_decode($catResult);
+            foreach ($catJson->data->products as $productItem){
+                curl_setopt($ch, CURLOPT_URL, 'https://api.digikala.com/v1/product/'.$productItem->id.'/');
+                $productResult = curl_exec($ch);
+                $productJson= json_decode($productResult);
+                dd($productJson);
+            }
 
-        $job=new getProductJson($request->product_url);
+            $page++;
+        }while($catJson->data->pager->total_pages!=$page);
 
-        $json=$job->handle();
-
-        $product=$this->insertProduct($json);
-
-        return view('product',compact('product'));
+        curl_close($ch);
     }
 
 
-    private function insertProduct($productJson){
 
-        $product = Product::find($productJson->id);
-        if ($product == null) {
-            $product = new Product();
-            $product->id = $productJson->id;
-            $product->title = $productJson->title_fa;
-            $product->image = $productJson->images->main->url[0];
-            $product->category = $productJson->data_layer->category;
-            $product->save();
-        }
-        return $product;
-    }
 
 
 

@@ -15,9 +15,8 @@
         <form method="post" action="{{route('submitForm')}}" style="width: 500px">
             @csrf
             <div class="form-group">
-                <label for="exampleInputEmail1"> Product</label>
-                <input type="text" name="product_url" class="form-control" id="exampleInputEmail1"
-                       aria-describedby="emailHelp" placeholder="Enter Product Url">
+                <label for="category">Product Category</label>
+                <input type="text" name="category_url" class="form-control" id="category" placeholder="Enter Category Url">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
 
