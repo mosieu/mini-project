@@ -16,7 +16,8 @@ class ProductController extends Controller
     function submit(Request $request)
     {
         $array = explode('/', $request->category_url);
-        $categorySlug = $array[4];
+        $categorySlug = str_replace('category-', '', $array[4]);
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -31,7 +32,31 @@ class ProductController extends Controller
                 curl_setopt($ch, CURLOPT_URL, 'https://api.digikala.com/v1/product/'.$productItem->id.'/');
                 $productResult = curl_exec($ch);
                 $productJson= json_decode($productResult);
+
+                $productJson->data->product->title_fa;//product title
+                foreach ($productJson->data->product->images->list as $image){
+                  foreach ($image->url as $url) {
+                     //product image urls
+                  }
+                }
+                foreach ($productJson->data->product->colors as $color){
+                    $color->hex_code;//product colors
+                }
+                $productJson->data->product->review->description;//product description
+                foreach ($productJson->data->product->review->attributes as $attribute){
+                    $attribute->title;//product attr title
+                    foreach ($attribute->values as $value){
+                        //product attr values
+                    }
+                }
+                foreach ($productJson->data->product->specifications[0]->attributes as $attribute) {
+                    $attribute->title;//product attr title
+                    foreach ($attribute->values as $value){
+                        //product attr values
+                    }
+                }
                 dd($productJson);
+
             }
 
             $page++;
